@@ -1,4 +1,3 @@
-
 # This file contains common pin mappings for the BIGTREETECH SKR mini
 # E3 v3.0. To use this config, the firmware should be compiled for the
 # STM32G0B1 with a "8KiB bootloader" and USB communication.
@@ -16,14 +15,9 @@
 [gcode_arcs]
 [pause_resume]
 [include K-ShakeTune/*.cfg]
-#[include OrbiterSensor.cfg]
+[include OrbiterSensor.cfg]
 [skew_correction]
 [include autoz.cfg]
-[include mmu/base/*.cfg]
-[include mmu/addons/mmu_erec_cutter.cfg]
-[include mmu/optional/client_macros.cfg]
-[include stealthburner_leds.cfg]
-[include klicky-probe.cfg]
 
 [mcu rpi]
 serial: /tmp/klipper_host_mcu
@@ -34,8 +28,8 @@ serial: /dev/serial/by-id/usb-Klipper_stm32g0b1xx_0E00270002504B5735313920-if00
 [mcu EBBCan]
 canbus_uuid: eba8c5d5aaef
 
-#[mcu MMB]
-#canbus_uuid: 90928ac9fcfd
+[mcu MMB]
+canbus_uuid: 90928ac9fcfd
 
 [stepper_x]
 step_pin: PB13
@@ -286,11 +280,11 @@ initial_RED: 0.5
 initial_GREEN: 0.5
 initial_BLUE: 0.5
 
-#[neopixel hotend_rgb]
-#pin: EBBCan:PD3
-#chain_count: 3
-#color_order: GRBW
-#initial_WHITE: .5
+[neopixel hotend_rgb]
+pin: EBBCan:PD3
+chain_count: 3
+color_order: GRBW
+initial_WHITE: .5
 
 [printer]
 kinematics: corexy
@@ -339,10 +333,6 @@ max_temp: 100
 sensor_type: temperature_mcu
 sensor_mcu: EBBCan
 
-[temperature_sensor MMU_Temperature]
-sensor_type: temperature_mcu
-sensor_mcu: mmu
-
 [screws_tilt_adjust]
 screw1: 20, 20
 screw1_name: Lower Left
@@ -370,7 +360,7 @@ screw_thread: CW-M4
 ###############                   MACROS                          #####################
 #######################################################################################
 
-
+[include klicky-probe.cfg]
 # See the sample-lcd.cfg file for definitions of common LCD displays.
 
 # Home, get position, throw around toolhead, home again.
@@ -392,9 +382,10 @@ gcode:
   CLEAN_NOZZLE
   CALIBRATE_Z  ; Set Z offset
   BED_MESH_CALIBRATE ADAPTIVE=1
-#  _ZEROG_PURGE
-#  G90  ;Set to absolute positioning
-#  SKEW_PROFILE LOAD=calilantern_skew_profile
+#  _ADAPTIVE_PURGE  ;Adaptive Purge
+  _ZEROG_PURGE
+  G90  ;Set to absolute positioning
+  SKEW_PROFILE LOAD=calilantern_skew_profile
 
 [gcode_macro _CHOME]
 gcode:
@@ -419,12 +410,6 @@ gcode:
     status_ready
   {% endif %}
 
-[gcode_macro _PRINT_START_2]
-gcode:
-  _ZEROG_PURGE
-  G90  ;Set to absolute positioning
-  SKEW_PROFILE LOAD=calilantern_skew_profile
-  status_printing
 
 
 [gcode_macro M190]
@@ -532,7 +517,7 @@ gcode:
     G92 E0                                                                              # Reset extruder distance
     M82                                                                                 # Absolute extrusion mode
 
-[gcode_macro _SETUP_ZEROG_PURGE]
+[gcode_macro SETUP_ZEROG_PURGE]
 gcode:
     SET_GCODE_VARIABLE MACRO=ZEROG_PURGE  VARIABLE=display_parameters   VALUE={params.DISPLAY_PARAMETERS|default(True)|int}
     SET_GCODE_VARIABLE MACRO=ZEROG_PURGE  VARIABLE=adaptive_enable   VALUE={params.ADAPTIVE_ENABLE|default(True)|int}
@@ -834,7 +819,7 @@ gcode:
 #*# pid_kd = 334.277
 #*#
 #*# [stepper_z]
-#*# position_endstop = -0.1725
+#*# position_endstop = -0.1875
 #*#
 #*# [bed_mesh default]
 #*# version = 1
